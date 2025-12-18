@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Our Memories</title>
+    <link rel="stylesheet" href="css/login.css">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="login-container">
+        <header class="login-header">
+            <h1>Login to Our Memories</h1>
+        </header>
+
+        <main class="login-main">
+            <div class="user">
+                <select id="username" class="form-control" required>
+                    <option value="" disabled selected>Select your name</option>
+                    <option value="you">Jayson</option>
+                    <option value="gf">Kate</option>
+                </select>
+            </div>
+
+            <div class="password">
+                <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+            </div>
+
+            <div class="login-btn">
+                <button type="submit" class="login-btn" onclick="login()">Login</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Simple validation
+            if (!username || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            // Match YOUR passwords from main.js
+            if ((username === 'you' && password === 'jayson123') ||
+                (username === 'gf' && password === 'kate123')) {
+
+                localStorage.setItem('loggedInUser', username);
+                window.location.href = 'index.html';
+            } else {
+                alert('Incorrect password!');
+            }
+        }
+
+        // Allow login with Enter key
+        document.getElementById('password').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+    </script>
+</body>
+
+</html>

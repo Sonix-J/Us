@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Memories</title>
+    <link rel="stylesheet" href="css/index.css">
+    <!-- Supabase MUST load first -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <!-- Login check -->
+    <script>
+        if (!localStorage.getItem('loggedInUser')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <header>
+        <h1>Welcome to Our Memories</h1>
+        <button class="add-btn" onclick="openModal()">Add Memory</button>
+    </header>
+
+    <!-- Modal -->
+    <div id="memoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Memory</h2>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="title" placeholder="Memory title" required>
+                <textarea id="description" placeholder="Description"></textarea>
+                <input type="file" id="image_file" accept="image/*" required>
+
+                <img id="image_preview" style="display:none; max-width:200px; margin-top:10px;">
+                
+                <button id="upload-btn">Upload Memory</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="memories-container"></div>
+
+    <button class="logout-btn" onclick="logout()">Logout</button>
+
+    <!-- Load main.js AFTER Supabase -->
+    <script src="js/main.js"></script>
+
+    <!-- Modal and button setup -->
+    <script>
+        function openModal() {
+            document.getElementById('memoryModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('memoryModal').style.display = 'none';
+            // Clear form
+            document.getElementById('title').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('image_file').value = '';
+            document.getElementById('image_preview').style.display = 'none';
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function (event) {
+            const modal = document.getElementById('memoryModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        document.getElementById('upload-btn').addEventListener('click', function () {
+            if (window.uploadMemory) {
+                uploadMemory();
+            } else {
+                alert('App loading... try again in 2 seconds.');
+            }
+        });
+
+        // Image preview
+        document.getElementById('image_file').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const preview = document.getElementById('image_preview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+
+</html>
