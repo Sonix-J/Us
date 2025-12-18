@@ -225,12 +225,10 @@ if (window.APP_LOADED) {
     };
 
     // 7. Auto-load memories on page load
-    if (window.location.pathname.includes('index.html') || window.location.pathname === '/') {
-        window.addEventListener('DOMContentLoaded', function () {
-            console.log('📄 Page loaded, loading memories...');
-            loadMemories();
-        });
-    }
+    window.addEventListener('DOMContentLoaded', function () {
+        console.log('📄 Page loaded, loading memories...');
+        loadMemories();
+    });
 
     console.log('✅ App ready!');
 }
