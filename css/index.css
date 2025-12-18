@@ -66,6 +66,8 @@ header {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
     animation: fadeIn 0.3s ease;
+    overflow-y: auto; /* Add this */
+    padding: 20px 0; /* Add padding for spacing */
 }
 
 @keyframes fadeIn {
@@ -81,7 +83,7 @@ header {
 /* Modal Content Box */
 .modal-content {
     background-color: #ffb3c6;
-    margin: 5% auto;
+    margin: 20px auto; /* Changed from 5% auto */
     padding: 0;
     border-radius: 12px;
     width: 90%;
@@ -89,6 +91,9 @@ header {
     box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
     animation: slideDown 0.3s ease;
     overflow: hidden;
+    max-height: calc(100vh - 40px); /* Prevent modal from being taller than screen */
+    display: flex;
+    flex-direction: column;
 }
 
 @keyframes slideDown {
@@ -138,6 +143,8 @@ header {
 /* Modal Body */
 .modal-body {
     padding: 25px;
+    overflow-y: auto; /* Make body scrollable */
+    max-height: calc(100vh - 160px); /* Adjust based on header height */
 }
 
 .modal-body input[type="text"],
@@ -178,6 +185,56 @@ header {
 .modal-body input[type="file"] {
     padding: 8px 12px;
     cursor: pointer;
+}
+
+/* Custom Scrollbar for Modal Body */
+.modal-body::-webkit-scrollbar {
+    width: 10px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: #ffb3c6;
+    border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: #fb6f92;
+    border-radius: 10px;
+    border: 2px solid #ffb3c6;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #ff8fab;
+}
+
+/* Custom Scrollbar for Main Page */
+body::-webkit-scrollbar {
+    width: 12px;
+}
+
+body::-webkit-scrollbar-track {
+    background: #ffb3c6;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: #fb6f92;
+    border-radius: 10px;
+    border: 2px solid #ffb3c6;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background: #ff8fab;
+}
+
+/* Firefox */
+.modal-body {
+    scrollbar-width: thin;
+    scrollbar-color: #fb6f92 #ffb3c6;
+}
+
+body {
+    scrollbar-width: thin;
+    scrollbar-color: #fb6f92 #ffb3c6;
 }
 
 #upload-btn {
@@ -389,5 +446,18 @@ header {
         left: 20px;
         padding: 10px 16px;
         font-size: 14px;
+    }
+
+    .modal {
+        padding: 10px 0;
+    }
+    
+    .modal-content {
+        margin: 10px auto;
+        max-height: calc(100vh - 20px);
+    }
+    
+    .modal-body {
+        max-height: calc(100vh - 120px);
     }
 }
