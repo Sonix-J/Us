@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Memories</title>
     <link rel="stylesheet" href="css/index.css">
+    <link rel="icon" type="image/svg+xml" href="icons/page-icon.svg">
     <!-- Supabase MUST load first -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -36,13 +37,18 @@
                 <input type="file" id="image_file" accept="image/*" required>
 
                 <img id="image_preview" style="display:none; max-width:200px; margin-top:10px;">
-                
+
                 <button id="upload-btn">Upload Memory</button>
             </div>
         </div>
     </div>
 
     <div id="memories-container"></div>
+
+    <div id="imageModal" class="image-modal">
+        <span class="image-close" onclick="closeImageModal()">&times;</span>
+        <img class="image-modal-content" id="fullImage">
+    </div>
 
     <button class="logout-btn" onclick="logout()">Logout</button>
 
@@ -57,11 +63,15 @@
 
         function closeModal() {
             document.getElementById('memoryModal').style.display = 'none';
-            // Clear form
             document.getElementById('title').value = '';
             document.getElementById('description').value = '';
             document.getElementById('image_file').value = '';
             document.getElementById('image_preview').style.display = 'none';
+
+            // Reset to "Add" mode when closing
+            if (window.resetModalToAddMode) {
+                resetModalToAddMode();
+            }
         }
 
         // Close modal when clicking outside of it
@@ -73,10 +83,19 @@
         }
 
         document.getElementById('upload-btn').addEventListener('click', function () {
-            if (window.uploadMemory) {
-                uploadMemory();
+            // Check if we're editing or adding
+            if (window.editingMemoryId) {
+                if (window.updateMemory) {
+                    updateMemory();
+                } else {
+                    alert('App loading... try again.');
+                }
             } else {
-                alert('App loading... try again in 2 seconds.');
+                if (window.uploadMemory) {
+                    uploadMemory();
+                } else {
+                    alert('App loading... try again in 2 seconds.');
+                }
             }
         });
 
@@ -91,6 +110,41 @@
                     preview.style.display = 'block';
                 };
                 reader.readAsDataURL(file);
+            }
+        });
+
+        function openImageModal(imageSrc, title) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('fullImage');
+            const caption = document.getElementById('imageCaption');
+
+            modal.style.display = 'flex';
+            modalImg.src = imageSrc;
+            caption.textContent = title;
+
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close image modal
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close when clicking outside the image
+        window.addEventListener('click', function (event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target === modal) {
+                closeImageModal();
+            }
+        });
+
+        // Close with Escape key
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeImageModal();
             }
         });
     </script>

@@ -66,8 +66,10 @@ header {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
     animation: fadeIn 0.3s ease;
-    overflow-y: auto; /* Add this */
-    padding: 20px 0; /* Add padding for spacing */
+    overflow-y: auto;
+    /* Add this */
+    padding: 20px 0;
+    /* Add padding for spacing */
 }
 
 @keyframes fadeIn {
@@ -83,7 +85,8 @@ header {
 /* Modal Content Box */
 .modal-content {
     background-color: #ffb3c6;
-    margin: 20px auto; /* Changed from 5% auto */
+    margin: 20px auto;
+    /* Changed from 5% auto */
     padding: 0;
     border-radius: 12px;
     width: 90%;
@@ -91,7 +94,8 @@ header {
     box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
     animation: slideDown 0.3s ease;
     overflow: hidden;
-    max-height: calc(100vh - 40px); /* Prevent modal from being taller than screen */
+    max-height: calc(100vh - 40px);
+    /* Prevent modal from being taller than screen */
     display: flex;
     flex-direction: column;
 }
@@ -143,8 +147,10 @@ header {
 /* Modal Body */
 .modal-body {
     padding: 25px;
-    overflow-y: auto; /* Make body scrollable */
-    max-height: calc(100vh - 160px); /* Adjust based on header height */
+    overflow-y: auto;
+    /* Make body scrollable */
+    max-height: calc(100vh - 160px);
+    /* Adjust based on header height */
 }
 
 .modal-body input[type="text"],
@@ -322,10 +328,11 @@ body {
 .memory-card img {
     width: 100%;
     height: 300px;
-    object-fit: contain;
+    object-fit: cover;
     /* Changed from 'cover' to 'contain' */
     object-position: center;
     display: block;
+    /* border-bottom: 1px solid #ccc ;  */
 }
 
 .memory-content {
@@ -358,7 +365,7 @@ body {
 
 .delete-btn {
     position: absolute;
-    top: 15px;
+    bottom: 15px;
     right: 15px;
     color: white;
     border: none;
@@ -386,6 +393,97 @@ body {
 .delete-btn:active {
     transform: scale(0.95);
     box-shadow: 0 2px 6px rgba(255, 71, 87, 0.3);
+}
+
+.edit-btn {
+    position: absolute;
+    bottom: 15px;
+    right: 65px;
+    /* Position next to delete button */
+    /* background-color: rgba(251, 111, 146, 0.9); */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    backdrop-filter: blur(4px);
+}
+
+.edit-btn:hover {
+    background-color: rgb(245, 204, 42);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(251, 111, 146, 0.4);
+}
+
+.edit-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 6px rgba(251, 111, 146, 0.3);
+}
+
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Close button for image modal */
+.image-close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #fff;
+    font-size: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    z-index: 2001;
+    line-height: 1;
+    user-select: none;
+}
+
+.image-close:hover,
+.image-close:focus {
+    color: #fb6f92;
+    transform: scale(1.1);
+}
+
+/* Full size image */
+.image-modal-content {
+    max-width: 90%;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+    animation: zoomIn 0.3s ease;
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 /* Responsive breakpoints */
@@ -451,12 +549,12 @@ body {
     .modal {
         padding: 10px 0;
     }
-    
+
     .modal-content {
         margin: 10px auto;
         max-height: calc(100vh - 20px);
     }
-    
+
     .modal-body {
         max-height: calc(100vh - 120px);
     }

@@ -140,17 +140,24 @@ if (window.APP_LOADED) {
             return `
         <div class="memory-card">
             ${canDelete ? `
+                <button class="edit-btn" onclick="editMemory('${memory.id}')" title="Edit memory">
+                    ✏️
+                </button>
                 <button class="delete-btn" onclick="deleteMemory('${memory.id}', '${memory.image_url || ''}')" title="Delete memory">
                     🗑️
                 </button>
             ` : ''}
             
             ${memory.image_url && memory.image_url.startsWith('http') ?
-                    `<img src="${memory.image_url}" alt="${memory.title}">` :
-                    `<div style="width:100%; height:300px; background:#f0f0f0; display:flex; align-items:center; justify-content:center; color:#999;">
+                `<img src="${memory.image_url}" 
+                    alt="${memory.title}" 
+                    onclick="openImageModal('${memory.image_url}', '${memory.title.replace(/'/g, "\\'")}')"
+                    style="cursor: pointer;"
+                    title="Click to view full size">` :
+                `<div style="width:100%; height:300px; background:#f0f0f0; display:flex; align-items:center; justify-content:center; color:#999;">
                     <span>No image</span>
                 </div>`
-                }
+            }
             
             <div class="memory-content">
                 <h3>${memory.title}</h3>
@@ -218,13 +225,144 @@ if (window.APP_LOADED) {
         }
     };
 
-    // 6. Logout function
+    window.editMemory = async function (memoryId) {
+        console.log('✏️ Editing memory:', memoryId);
+
+        try {
+            // Get the memory data from database
+            const { data, error } = await supabase
+                .from('memories')
+                .select('*')
+                .eq('id', memoryId)
+                .single();
+
+            if (error) throw error;
+
+            console.log('📄 Memory data loaded:', data);
+
+            // Store the memory ID for updating later
+            window.editingMemoryId = memoryId;
+            window.currentImageUrl = data.image_url;
+
+            // Fill the form with existing data
+            document.getElementById('title').value = data.title;
+            document.getElementById('description').value = data.description || '';
+
+            // Show current image preview
+            const preview = document.getElementById('image_preview');
+            if (data.image_url && data.image_url.startsWith('http')) {
+                preview.src = data.image_url;
+                preview.style.display = 'block';
+            }
+
+            // Change modal title and button text
+            document.querySelector('.modal-header h2').textContent = 'Edit Memory';
+            document.getElementById('upload-btn').textContent = 'Update Memory';
+
+            // Open modal
+            openModal();
+
+        } catch (error) {
+            console.error('💥 Edit error:', error);
+            alert('Failed to load memory for editing');
+        }
+    };
+
+    // 7. UPDATE MEMORY FUNCTION
+    window.updateMemory = async function () {
+        console.log('💾 Updating memory:', window.editingMemoryId);
+
+        const title = document.getElementById('title').value;
+        const description = document.getElementById('description').value;
+        const fileInput = document.getElementById('image_file');
+
+        if (!title) {
+            alert('Please enter a title!');
+            return;
+        }
+
+        try {
+            let imageUrl = window.currentImageUrl; // Keep existing image by default
+
+            // If user selected a new image, upload it
+            if (fileInput.files[0]) {
+                const file = fileInput.files[0];
+                console.log('📁 New file selected:', file.name);
+
+                // Upload new file
+                const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('memories')
+                    .upload(fileName, file);
+
+                if (uploadError) {
+                    console.error('❌ Upload failed:', uploadError);
+                    alert('Failed to upload new image');
+                    return;
+                }
+
+                // Get new public URL
+                const { data: { publicUrl } } = supabase.storage
+                    .from('memories')
+                    .getPublicUrl(fileName);
+
+                imageUrl = publicUrl;
+                console.log('✅ New image uploaded:', imageUrl);
+
+                // Delete old image from storage
+                if (window.currentImageUrl && window.currentImageUrl.includes('storage/v1/object/public/memories/')) {
+                    const oldFileName = window.currentImageUrl.split('/memories/')[1];
+                    await supabase.storage.from('memories').remove([oldFileName]);
+                    console.log('🗑️ Old image deleted');
+                }
+            }
+
+            // Update database
+            const { data, error } = await supabase
+                .from('memories')
+                .update({
+                    title: title,
+                    description: description,
+                    image_url: imageUrl
+                })
+                .eq('id', window.editingMemoryId)
+                .select();
+
+            if (error) {
+                console.error('❌ Update failed:', error);
+                alert('Failed to update memory');
+                return;
+            }
+
+            console.log('✅ Memory updated!', data);
+            alert('✅ Memory updated successfully!');
+
+            // Reset and close
+            resetModalToAddMode();
+            closeModal();
+            loadMemories();
+
+        } catch (error) {
+            console.error('💥 Update error:', error);
+            alert('Something went wrong: ' + error.message);
+        }
+    };
+
+    // 8. RESET MODAL TO "ADD" MODE
+    window.resetModalToAddMode = function () {
+        window.editingMemoryId = null;
+        window.currentImageUrl = null;
+        document.querySelector('.modal-header h2').textContent = 'Add New Memory';
+        document.getElementById('upload-btn').textContent = 'Upload Memory';
+    };
+
+    // 9. Logout function
     window.logout = function () {
         localStorage.removeItem('loggedInUser');
         window.location.href = 'login.html';
     };
 
-    // 7. Auto-load memories on page load
+    // 10. Auto-load memories on page load
     window.addEventListener('DOMContentLoaded', function () {
         console.log('📄 Page loaded, loading memories...');
         loadMemories();
